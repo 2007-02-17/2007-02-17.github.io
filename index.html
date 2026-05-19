@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>原神 · 多角色性格契合测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1b2b3f 0%, #1e3a4d 40%, #253b4b 100%);
+      font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: -20%;
+      left: -20%;
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 215, 150, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 70%, rgba(100, 180, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255, 248, 240, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 2.5rem;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      padding: 2rem 1.5rem 2.5rem;
+      position: relative;
+      z-index: 2;
+      color: #f7f3e6;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 600;
+      font-size: 2rem;
+      letter-spacing: 0.05em;
+      color: #ffecd2;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      margin-bottom: 0.2rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #cfc5b0;
+      margin-bottom: 2rem;
+      font-size: 0.85rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.25);
+      padding-bottom: 1rem;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      color: #e0d3bb;
+      font-size: 0.85rem;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      margin: 0 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #f7d794, #f3a683);
+      border-radius: 20px;
+      transition: width 0.25s ease;
+    }
+
+    .question-card {
+      background: rgba(20, 30, 40, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 1.8rem 1.3rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 1.8rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .question-text {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: 1.8rem;
+      line-height: 1.4;
+      color: #fff5e6;
+      text-shadow: 0 2px 6px black;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 220, 180, 0.3);
+      border-radius: 2.5rem;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #f9efe2;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      word-break: break-word;
+    }
+    .option-btn:hover {
+      background: rgba(245, 200, 140, 0.2);
+      border-color: #f5c382;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+    }
+    .option-letter {
+      background: #e6b87b;
+      color: #1e272e;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    /* 结果卡片 */
+    .result-card {
+      background: rgba(15, 25, 35, 0.7);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 2.2rem;
+      padding: 2rem 1.2rem;
+      border: 1px solid rgba(255, 215, 150, 0.4);
+      box-shadow: 0 25px 35px rgba(0,0,0,0.6);
+    }
+
+    .top-character {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .character-avatar {
+      font-size: 4.5rem;
+      filter: drop-shadow(0 8px 12px black);
+    }
+    .character-name {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ffd78b;
+      letter-spacing: 0.05em;
+    }
+    .top-percent {
+      font-size: 1.4rem;
+      color: #f3a683;
+      font-weight: 600;
+    }
+
+    .match-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+    .match-item {
+      background: rgba(0,0,0,0.35);
+      border-radius: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ede0cc;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .match-name {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+    .match-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      margin: 0 1rem;
+      overflow: hidden;
+    }
+    .match-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f7d794, #e6b87b);
+      border-radius: 10px;
+      width: 0%;
+    }
+    .retry-btn {
+      background: #e6b87b;
+      border: none;
+      color: #1a252f;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 0.9rem 2.2rem;
+      border-radius: 3rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: 0.2s;
+      letter-spacing: 0.05em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .retry-btn:hover {
+      background: #f5cf91;
+      transform: scale(1.03);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 1.2rem;
+      color: #9a8b78;
+      font-size: 0.7rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="appContainer">
+  <div id="quizSection">
+    <h1>✨ 原神 · 心象契合 ✨</h1>
+    <div class="subtitle">你的性格，会与谁共鸣最深？</div>
+    <div class="progress-wrap">
+      <span id="currentQ">1</span>/<span id="totalQ">15</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%;"></div></div>
+    </div>
+    <div class="question-card">
+      <div class="question-text" id="questionText">加载中...</div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+  </div>
+
+  <div id="resultSection" class="hidden">
+    <div class="result-card" id="resultCard"></div>
+  </div>
+  <footer>「旅行者，你的命运由星辰指引」</footer>
+</div>
+
+<script>
+  (function() {
+    // ---------- 全角色库（包含近期新角色）----------
+    const characters = {
+      // 蒙德
+      qin: { name: "琴", avatar: "🦁🌼", element: "风", weapon: "单手剑" },
+      amber: { name: "安柏", avatar: "🐰🔥", element: "火", weapon: "弓" },
+      lisa: { name: "丽莎", avatar: "📚⚡", element: "雷", weapon: "法器" },
+      kaeya: { name: "凯亚", avatar: "❄️🗡️", element: "冰", weapon: "单手剑" },
+      diluc: { name: "迪卢克", avatar: "🦅🔥", element: "火", weapon: "双手剑" },
+      venti: { name: "温迪", avatar: "🍃🎵", element: "风", weapon: "弓" },
+      klee: { name: "可莉", avatar: "🎒💥", element: "火", weapon: "法器" },
+      // 璃月
+      keqing: { name: "刻晴", avatar: "⚡🗡️", element: "雷", weapon: "单手剑" },
+      ganyu: { name: "甘雨", avatar: "❄️🌸", element: "冰", weapon: "弓" },
+      zhongli: { name: "钟离", avatar: "🪨📜", element: "岩", weapon: "长柄武器" },
+      xiao: { name: "魈", avatar: "😈🌪️", element: "风", weapon: "长柄武器" },
+      hutao: { name: "胡桃", avatar: "👻🔥", element: "火", weapon: "长柄武器" },
+      lanyan: { name: "蓝砚", avatar: "🎋🧺", element: "风", weapon: "法器" },
+      // 稻妻
+      ayaka: { name: "神里绫华", avatar: "❄️👘", element: "冰", weapon: "单手剑" },
+      raiden: { name: "雷电将军", avatar: "⚡👑", element: "雷", weapon: "长柄武器" },
+      yae: { name: "八重神子", avatar: "🦊🌸", element: "雷", weapon: "法器" },
+      wanderer: { name: "流浪者", avatar: "🎭🌬️", element: "风", weapon: "法器" },
+      mizuki: { name: "梦见月瑞希", avatar: "🌙🕯️", element: "水", weapon: "法器" },
+      // 须弥
+      nahida: { name: "纳西妲", avatar: "🌿📖", element: "草", weapon: "法器" },
+      // 至冬/其他
+      tartaglia: { name: "达达利亚", avatar: "🐳💧", element: "水", weapon: "弓" },
+      kokomi: { name: "珊瑚宫心海", avatar: "🐠💙", element: "水", weapon: "法器" },
+      // 纳塔 5.0-5.8
+      mualani: { name: "玛拉妮", avatar: "🏄🌺", element: "水", weapon: "法器" },
+      kinich: { name: "基尼奇", avatar: "🦎🗡️", element: "草", weapon: "单手剑" },
+      kachina: { name: "卡齐娜", avatar: "💎🔥", element: "岩", weapon: "长柄武器" },
+      xilonen: { name: "希诺宁", avatar: "🔨🪨", element: "岩", weapon: "单手剑" },
+      orolon: { name: "欧洛伦", avatar: "🦅🌫️", element: "雷", weapon: "弓" },
+      chasca: { name: "恰斯卡", avatar: "🦅💨", element: "风", weapon: "弓" },
+      mavuika: { name: "玛薇卡", avatar: "☀️🔥", element: "火", weapon: "双手剑" },
+      citlali: { name: "茜特菈莉", avatar: "📚🍡", element: "冰", weapon: "法器" },
+      varesa: { name: "瓦雷莎", avatar: "🍖💪", element: "雷", weapon: "长柄武器" },
+      iansan: { name: "伊安珊", avatar: "🏋️⚡", element: "雷", weapon: "长柄武器" },
+      escoffier: { name: "爱可菲", avatar: "👩‍🍳🔥", element: "火", weapon: "单手剑" },
+      ifa: { name: "伊法", avatar: "🐾💚", element: "草", weapon: "法器" },
+      skirk: { name: "丝柯克", avatar: "🗡️❄️", element: "冰", weapon: "单手剑" },
+      talia: { name: "塔利雅", avatar: "⛪🎭", element: "水", weapon: "法器" },
+      ineffa: { name: "伊涅芙", avatar: "🤖🛠️", element: "岩", weapon: "长柄武器" },
+      nephyr: { name: "奈芙尔", avatar: "🌑🔮", element: "冰", weapon: "法器" }
+    };
+
+    // 题目（15题，确保每个角色都有得分机会）
+    const questions = [
+      {
+        text: "面对突如其来的困难，你通常会？",
+        options: [
+          { text: "立刻分析局势，制定周密计划", scores: { zhongli:3, ayaka:2, raiden:2, xilonen:2, mizuki:2 } },
+          { text: "凭借直觉迅速行动，边做边调整", scores: { keqing:3, xiao:2, hutao:2, kinich:2, chasca:2 } },
+          { text: "先安抚身边人情绪，再想办法", scores: { ganyu:3, nahida:3, kokomi:3, ifa:2 } },
+          { text: "觉得有趣，想试试非常规解法", scores: { hutao:3, yae:3, venti:2, citlali:2, klee:2 } }
+        ]
+      },
+      {
+        text: "周末你最想怎么度过？",
+        options: [
+          { text: "去野外吹风散步，感受自然", scores: { venti:3, ganyu:2, nahida:2, mualani:3 } },
+          { text: "整理房间或完成预设目标", scores: { keqing:3, zhongli:2, raiden:2, escoffier:2 } },
+          { text: "找朋友热闹聚会或打游戏", scores: { hutao:3, amber:3, venti:2, yae:2, tartaglia:2 } },
+          { text: "独自安静阅读或冥想修炼", scores: { xiao:3, ayaka:3, lisa:2, wanderer:3, skirk:2 } }
+        ]
+      },
+      {
+        text: "朋友向你倾诉烦恼，你更倾向于？",
+        options: [
+          { text: "理性分析问题，给出具体建议", scores: { zhongli:3, keqing:2, raiden:2, xilonen:2 } },
+          { text: "安静倾听，陪伴并给予温暖", scores: { ganyu:3, nahida:3, kokomi:3, ifa:3, ineffa:2 } },
+          { text: "用幽默或故事让对方开心起来", scores: { hutao:3, venti:3, yae:2, kaeya:3 } },
+          { text: "直言不讳，哪怕真相有些残酷", scores: { xiao:2, keqing:2, raiden:3, diluc:2, skirk:2 } }
+        ]
+      },
+      {
+        text: "你更看重哪一种品质？",
+        options: [
+          { text: "自由与创造力", scores: { venti:4, yae:2, klee:2, wanderer:3, chasca:3 } },
+          { text: "责任与契约", scores: { zhongli:4, ganyu:2, raiden:2, mavuika:3, qin:3 } },
+          { text: "勇气与行动力", scores: { keqing:3, xiao:3, tartaglia:3, kachina:3 } },
+          { text: "智慧与同理心", scores: { nahida:4, ayaka:2, kokomi:2, mizuki:3, nehpyr:2 } }
+        ]
+      },
+      {
+        text: "在团队中，你通常扮演什么角色？",
+        options: [
+          { text: "制定策略的指挥者", scores: { keqing:3, zhongli:3, raiden:2, mavuika:3 } },
+          { text: "默默执行的可靠后盾", scores: { ganyu:3, xiao:2, ayaka:2, diluc:2, ineffa:3 } },
+          { text: "调节气氛的开心果", scores: { hutao:4, venti:3, amber:3, tartaglia:2 } },
+          { text: "观察全局的隐者谋士", scores: { yae:4, nahida:3, lisa:2, orolon:3 } }
+        ]
+      },
+      {
+        text: "对于“规则”，你的态度是？",
+        options: [
+          { text: "规则是秩序的基石，必须遵守", scores: { raiden:4, zhongli:3, ayaka:2, escoffier:3 } },
+          { text: "规则可以灵活变通，看情况", scores: { yae:3, keqing:2, nahida:2, talia:3 } },
+          { text: "讨厌束缚，规则就是用来打破的", scores: { venti:4, hutao:2, wanderer:2, chasca:3 } },
+          { text: "我遵循自己内心的准则", scores: { xiao:4, diluc:3, skirk:3, nephyr:3 } }
+        ]
+      },
+      {
+        text: "哪种描述更贴近你的孤独感？",
+        options: [
+          { text: "我享受独处，那是我恢复能量的方式", scores: { xiao:3, ayaka:2, lisa:2, wanderer:3, nehpyr:2 } },
+          { text: "偶尔孤独，但更想和伙伴一起热闹", scores: { hutao:2, venti:2, amber:3, mualani:2 } },
+          { text: "因责任而孤独，但被需要就足够", scores: { ganyu:3, zhongli:2, raiden:2, mavuika:3, qin:3 } },
+          { text: "我很少感到孤独，总有有趣的事可做", scores: { yae:3, klee:3, tartaglia:2, citlali:2 } }
+        ]
+      },
+      {
+        text: "如果获得改变过去的机会，你会？",
+        options: [
+          { text: "绝不使用，过去造就了现在的我", scores: { zhongli:3, raiden:3, xiao:2, skirk:2 } },
+          { text: "可能会修正某个遗憾，但会很谨慎", scores: { ganyu:2, ayaka:3, nahida:2, mizuki:2 } },
+          { text: "跃跃欲试，体验不同可能性", scores: { hutao:2, venti:3, yae:2, klee:2, citlali:3 } },
+          { text: "改变那些无法挽回的失去", scores: { xiao:3, diluc:3, wanderer:2, kaeya:2 } }
+        ]
+      },
+      {
+        text: "你理想中的生活状态是？",
+        options: [
+          { text: "游历四方，记录世间风景", scores: { venti:4, ganyu:1, mualani:3, tartaglia:2 } },
+          { text: "建立稳固的事业与羁绊", scores: { zhongli:3, keqing:2, raiden:2, mavuika:3, xilonen:2 } },
+          { text: "与重要的人一起平淡度日", scores: { ayaka:3, ganyu:3, nahida:2, kokomi:3 } },
+          { text: "随心所欲，不为俗事所累", scores: { yae:3, hutao:2, wanderer:3, citlali:2 } }
+        ]
+      },
+      {
+        text: "面对“神明”的存在，你更想说？",
+        options: [
+          { text: "我会以自己的方式超越神明", scores: { keqing:4, raiden:1, wanderer:2, skirk:3 } },
+          { text: "神明亦有情感，我想理解他们", scores: { nahida:4, venti:2, mizuki:3 } },
+          { text: "与神同行或对抗，都是命运", scores: { xiao:3, zhongli:2, diluc:2 } },
+          { text: "神不神的，不如吃茶去~", scores: { yae:3, hutao:2, citlali:3, talia:2 } }
+        ]
+      },
+      {
+        text: "哪种颜色最能代表你的内心？",
+        options: [
+          { text: "炽热的红色", scores: { hutao:3, klee:3, mavuika:4, tartaglia:2 } },
+          { text: "沉静的蓝色", scores: { ganyu:2, ayaka:2, kokomi:3, nehpyr:2 } },
+          { text: "生机的绿色", scores: { nahida:4, kinich:3, ifa:3 } },
+          { text: "自由的青色", scores: { venti:4, xiao:2, chasca:4, wanderer:2 } }
+        ]
+      },
+      {
+        text: "你最容易因为什么而感动？",
+        options: [
+          { text: "默默守护的陪伴", scores: { xiao:3, ganyu:3, diluc:3, ifa:3 } },
+          { text: "直率热烈的表达", scores: { amber:4, hutao:2, klee:3, tartaglia:3 } },
+          { text: "智慧的点拨与启迪", scores: { lisa:3, nahida:3, yae:2, mizuki:3 } },
+          { text: "历经风雨后的重逢", scores: { zhongli:3, ayaka:3, wanderer:3, kaeya:2 } }
+        ]
+      },
+      {
+        text: "朋友评价你时，最常用的词是？",
+        options: [
+          { text: "可靠/稳重", scores: { zhongli:4, qin:4, xilonen:3, ineffa:3 } },
+          { text: "有趣/搞笑", scores: { hutao:4, kaeya:4, citlali:3, talia:3 } },
+          { text: "温柔/体贴", scores: { ganyu:4, kokomi:4, nahida:3, ifa:3 } },
+          { text: "独立/神秘", scores: { xiao:3, wanderer:4, skirk:4, nehpyr:3 } }
+        ]
+      },
+      {
+        text: "你希望被别人记住的特质是？",
+        options: [
+          { text: "卓越的能力与成就", scores: { keqing:3, raiden:3, escoffier:3, mavuika:3 } },
+          { text: "善良与温暖的善意", scores: { ganyu:3, nahida:4, amber:3, kokomi:3 } },
+          { text: "独特的个性与灵魂", scores: { hutao:3, venti:3, yae:3, klee:3 } },
+          { text: "坚韧不拔的意志", scores: { xiao:4, diluc:3, kachina:4, skirk:3 } }
+        ]
+      },
+      {
+        text: "若旅途必须选择一位同伴，你会选？",
+        options: [
+          { text: "能一起胡闹的朋友", scores: { hutao:4, amber:3, klee:4, tartaglia:2 } },
+          { text: "沉稳可靠的守护者", scores: { zhongli:4, qin:3, xilonen:3, ineffa:3 } },
+          { text: "安静却有力量的伙伴", scores: { xiao:3, ayaka:3, wanderer:3, skirk:2 } },
+          { text: "充满智慧的解惑者", scores: { nahida:4, lisa:3, yae:2, mizuki:4 } }
+        ]
+      }
+    ];
+
+    // 状态变量
+    let currentQuestionIndex = 0;
+    let scores = {};
+    // 初始化所有角色分数为0
+    for (let key in characters) {
+      scores[key] = 0;
+    }
+
+    const quizSection = document.getElementById('quizSection');
+    const resultSection = document.getElementById('resultSection');
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const currentQSpan = document.getElementById('currentQ');
+    const totalQSpan = document.getElementById('totalQ');
+    const progressFill = document.getElementById('progressFill');
+    const resultCard = document.getElementById('resultCard');
+
+    totalQSpan.textContent = questions.length;
+
+    function renderQuestion() {
+      if (currentQuestionIndex >= questions.length) {
+        showResult();
+        return;
+      }
+      const q = questions[currentQuestionIndex];
+      questionText.textContent = q.text;
+      optionsContainer.innerHTML = '';
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        const letter = String.fromCharCode(65 + idx);
+        btn.innerHTML = `<span class="option-letter">${letter}</span>${opt.text}`;
+        btn.addEventListener('click', () => selectOption(opt));
+        optionsContainer.appendChild(btn);
+      });
+      currentQSpan.textContent = currentQuestionIndex + 1;
+      const progressPercent = (currentQuestionIndex / questions.length) * 100;
+      progressFill.style.width = `${progressPercent}%`;
+    }
+
+    function selectOption(option) {
+      for (let [char, points] of Object.entries(option.scores)) {
+        if (scores.hasOwnProperty(char)) {
+          scores[char] += points;
+        }
+      }
+      currentQuestionIndex++;
+      renderQuestion();
+    }
+
+    function showResult() {
+      quizSection.classList.add('hidden');
+      resultSection.classList.remove('hidden');
+
+      // 按分数降序排序
+      const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      const maxScore = sorted[0][1] || 1; // 防止除以0
+      // 取前8名展示
+      const topEntries = sorted.slice(0, 8);
+      const topCharKey = topEntries[0][0];
+      const topChar = characters[topCharKey];
+
+      let listHTML = '';
+      topEntries.forEach(([key, score]) => {
+        const char = characters[key];
+        const percent = Math.round((score / maxScore) * 100);
+        listHTML += `
+          <div class="match-item">
+            <span class="match-name">${char.avatar} ${char.name}</span>
+            <div class="match-bar-bg"><div class="match-bar-fill" style="width:${percent}%;"></div></div>
+            <span style="font-weight:600; min-width:45px;">${percent}%</span>
+          </div>
+        `;
+      });
+
+      resultCard.innerHTML = `
+        <div class="top-character">
+          <div class="character-avatar">${topChar.avatar}</div>
+          <div class="character-name">${topChar.name}</div>
+          <div class="top-percent">契合度 ${Math.round((topEntries[0][1]/maxScore)*100)}%</div>
+        </div>
+        <div class="match-list">
+          ${listHTML}
+        </div>
+        <button class="retry-btn" id="retryButton">⟳ 重新测试</button>
+      `;
+
+      document.getElementById('retryButton').addEventListener('click', resetTest);
+    }
+
+    function resetTest() {
+      for (let key in scores) {
+        scores[key] = 0;
+      }
+      currentQuestionIndex = 0;
+      resultSection.classList.add('hidden');
+      quizSection.classList.remove('hidden');
+      renderQuestion();
+    }
+
+    renderQuestion();
+  })();
+</script>
+</body>
+</html>
